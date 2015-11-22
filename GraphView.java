@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.AttributeSet;
 import android.view.View;
 
 
@@ -24,8 +25,12 @@ public class GraphView extends View {
     private String title;
     private boolean type;
 
-    public GraphView(Context context, float[] values, String title, String[] horlabels, String[] verlabels, boolean type) {
-        super(context);
+    public GraphView(Context context, AttributeSet attrs){
+        super(context,attrs);
+    }
+
+    public void  setData(float[] values, String title, String[] horlabels, String[] verlabels, boolean type) {
+//        super(context);
         if (values == null)
             values = new float[0];
         else
@@ -48,7 +53,7 @@ public class GraphView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        float border = 20;
+        float border = 20; //edges of graph, leave at 20
         float horstart = border * 2;
         float height = getHeight();
         float width = getWidth() - 1;
@@ -61,23 +66,23 @@ public class GraphView extends View {
         paint.setTextAlign(Paint.Align.LEFT);
         int vers = verlabels.length - 1;
         for (int i = 0; i < verlabels.length; i++) {
-            paint.setColor(Color.DKGRAY);
+            paint.setColor(Color.GREEN); //color of the grid lines
             float y = ((graphheight / vers) * i) + border;
             canvas.drawLine(horstart, y, width, y, paint);
-            paint.setColor(Color.WHITE);
+            paint.setColor(Color.RED); // color of axis labels
             canvas.drawText(verlabels[i], 0, y, paint);
         }
         int hors = horlabels.length - 1;
         for (int i = 0; i < horlabels.length; i++) {
-            paint.setColor(Color.DKGRAY);
+            paint.setColor(Color.GREEN); //color of the grid lines
             float x = ((graphwidth / hors) * i) + horstart;
-            canvas.drawLine(x, height - border, x, border, paint);
+           // canvas.drawLine(x, height - border, x, border, paint);
             paint.setTextAlign(Paint.Align.CENTER);
             if (i==horlabels.length-1)
                 paint.setTextAlign(Paint.Align.RIGHT);
             if (i==0)
                 paint.setTextAlign(Paint.Align.LEFT);
-            paint.setColor(Color.WHITE);
+            paint.setColor(Color.RED); //font color of axis labels
             canvas.drawText(horlabels[i], x, height - 4, paint);
         }
 
@@ -85,7 +90,8 @@ public class GraphView extends View {
         canvas.drawText(title, (graphwidth / 2) + horstart, border - 4, paint);
 
         if (max != min) {
-            paint.setColor(Color.LTGRAY);
+            paint.setColor(Color.WHITE); //color of the line
+            paint.setStrokeWidth(10.0f);
             if (type == BAR) {
                 float datalength = values.length;
                 float colwidth = (width - (2 * border)) / datalength;
@@ -94,6 +100,7 @@ public class GraphView extends View {
                     float rat = val / diff;
                     float h = graphheight * rat;
                     canvas.drawRect((i * colwidth) + horstart, (border - h) + graphheight, ((i * colwidth) + horstart) + (colwidth - 1), height - (border - 1), paint);
+
                 }
             } else {
                 float datalength = values.length;
